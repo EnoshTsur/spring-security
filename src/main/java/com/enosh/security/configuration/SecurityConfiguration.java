@@ -1,7 +1,10 @@
 package com.enosh.security.configuration;
 
+import com.enosh.security.services.AdminDetailsService;
+import com.enosh.security.services.CompanyDetailsService;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -15,24 +18,24 @@ import java.util.Arrays;
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
+    @Autowired
+    private AdminDetailsService adminDetailsService;
+    @Autowired
+    private CompanyDetailsService companyDetailsService;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.inMemoryAuthentication()
-                .withUser("company")
-                .password("123")
-                .roles("COMPANY")
+        auth
+                .userDetailsService(companyDetailsService)
                 .and()
-                .withUser("admin")
-                .password("123")
-                .roles("ADMIN");
+                .userDetailsService(adminDetailsService);
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
                 .antMatchers("/admin/**").hasRole("ADMIN")
-                .antMatchers("/company/**").hasAnyRole("ADMIN", "COMPANY")
+                .antMatchers("/company/**").hasRole("COMPANY")
                 .antMatchers("/", "/h2-console/**").permitAll()
                 .and().csrf().ignoringAntMatchers("/h2-console/**")
                 .and().headers().frameOptions().sameOrigin()

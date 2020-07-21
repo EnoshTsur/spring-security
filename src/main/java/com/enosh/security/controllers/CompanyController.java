@@ -17,7 +17,7 @@ public class CompanyController {
 
     @GetMapping("/me")
     public String companyDetails(Principal principal) {
-
+        System.out.println(principal);
         return nameFromPrincipal
                 .andThen(withHtml("h1"))
                 .apply(principal);
