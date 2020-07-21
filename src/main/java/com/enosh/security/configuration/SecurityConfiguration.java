@@ -33,12 +33,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
                 .antMatchers("/admin/**").hasRole("ADMIN")
                 .antMatchers("/company/**").hasAnyRole("ADMIN", "COMPANY")
-                .antMatchers("/").permitAll()
+                .antMatchers("/", "/h2-console/**").permitAll()
+                .and().csrf().ignoringAntMatchers("/h2-console/**")
+                .and().headers().frameOptions().sameOrigin()
                 .and()
                 .formLogin();
     }
-
-    //http://localhost:8080/admin/getCustomer/fnd/324
 
     @Bean
     public PasswordEncoder getPasswordEncoder() {
